@@ -1,74 +1,241 @@
+# API Documentation
 
-# Parking Lot System API Documentation
+Base URL: `http://localhost:8080/api`
 
-## Base URL
+---
+
+## 1. Parking Lot
+
+### Create Parking Lot
 ```
-http://localhost:8081
-```
+POST /parking-lots
+Content-Type: application/json
 
-## Endpoints
-
-### 1. Park a Vehicle
-
-`POST /entry-panel/park`
-
-**Request:**
-```json
+Request:
 {
-  "vehicleNumber": "RJ14AB1234",
-  "vehicleType": "CAR"
+  "name": "Tech Park",
+  "address": "MG Road, Bangalore"
+}
+
+Response: 201 Created
+{
+  "id": 1,
+  "name": "Tech Park",
+  "address": "MG Road, Bangalore",
+  "createdAt": "2025-08-04T08:00:00",
+  "floorIds": []
 }
 ```
 
-**Response:**
-```json
+### Get All Parking Lots
+```
+GET /parking-lots
+
+Response: 200 OK
+[
+  { "id": 1, "name": "...", "address": "...", "createdAt": "...", "floorIds": [] }
+]
+```
+
+---
+
+## 2. Floor
+
+### Add Floor
+```
+POST /floors
+Content-Type: application/json
+
+Request:
 {
-  "ticketId": "TCKT-0001",
-  "spotId": "SPOT-1",
-  "floor": 0,
-  "vehicleNumber": "RJ14AB1234",
-  "entryTime": "2025-08-03T15:32:00"
+  "parkingLotId": 1,
+  "floorNumber": "Ground"
+}
+
+Response: 201 Created
+{
+  "id": 1,
+  "floorNumber": "Ground",
+  "parkingLotId": 1,
+  "spotIds": []
 }
 ```
 
-### 2. Unpark Vehicle
+### List Floors by Parking Lot
+```
+GET /floors/by-lot/1
 
-`POST /exit-panel/unpark`
+Response: 200 OK
+[
+  { "id":1, "floorNumber":"Ground", "parkingLotId":1, "spotIds":[] }
+]
+```
 
-**Request:**
-```json
+---
+
+## 3. Spot
+
+### Add Spot
+```
+POST /spots
+Content-Type: application/json
+
+Request:
 {
-  "ticketId": "TCKT-0001"
+  "floorId": 1,
+  "spotNumber": "G1-C1",
+  "spotType": "CAR"
+}
+
+Response: 201 Created
+{
+  "id": 1,
+  "spotNumber": "G1-C1",
+  "spotType": "CAR",
+  "isAvailable": true,
+  "floorId": 1
 }
 ```
 
-**Response:**
-```json
+### List Available Spots
+```
+GET /spots/available/1
+
+Response: 200 OK
+[
+  { "id":1, "spotNumber":"G1-C1", "spotType":"CAR", "isAvailable":true, "floorId":1 }
+]
+```
+
+---
+
+## 4. Vehicle
+
+### Register Vehicle
+```
+POST /vehicles
+Content-Type: application/json
+
+Request:
 {
-  "ticketId": "TCKT-0001",
-  "exitTime": "2025-08-03T17:00:00",
-  "totalAmount": 30.00,
-  "status": "PAID"
+  "licensePlate": "KA01AB1234",
+  "vehicleType": "CAR",
+  "ownerName": "Alice"
+}
+
+Response: 201 Created
+{
+  "id": 1,
+  "licensePlate": "KA01AB1234",
+  "vehicleType": "CAR",
+  "ownerName": "Alice"
 }
 ```
 
-### 3. Get Availability
+---
 
-`GET /parking-lot/availability`
+## 5. Ticket
 
-**Response:**
-```json
+### Issue Ticket (Entry)
+```
+POST /tickets
+Content-Type: application/json
+
+Request:
 {
-  "floors": [
-    {
-      "floorNumber": 0,
-      "spotsAvailable": {
-        "BIKE": 5,
-        "CAR": 10,
-        "TRUCK": 2
-      }
-    }
-  ]
+  "vehicleId": 1,
+  "floorId": 1,
+  "entryPanelId": 1
+}
+
+Response: 201 Created
+{
+  "id": 1,
+  "entryTime": "2025-08-04T08:15:00",
+  "exitTime": null,
+  "active": true,
+  "fee": 0.0,
+  "spotId": 1,
+  "vehicleId": 1
+}
+```
+
+### Exit Ticket
+```
+POST /tickets/exit
+Content-Type: application/json
+
+Request:
+{
+  "ticketId": 1,
+  "exitPanelId": 1
+}
+
+Response: 200 OK
+{
+  "id": 1,
+  "entryTime": "2025-08-04T08:15:00",
+  "exitTime": "2025-08-04T10:00:00",
+  "active": false,
+  "fee": 40.0,
+  "spotId": 1,
+  "vehicleId": 1
+}
+```
+
+### List Active Tickets
+```
+GET /tickets/active
+
+Response: 200 OK
+[
+  { "id":1, "entryTime":"...", "exitTime":null, "active":true, "fee":0.0, "spotId":1, "vehicleId":1 }
+]
+```
+
+---
+
+## 6. Panels
+
+### Create Entry Panel
+```
+POST /entry-panels
+Content-Type: application/json
+
+Request:
+{
+  "parkingLotId": 1,
+  "panelCode": "EP-1",
+  "location": "Main Gate"
+}
+
+Response: 201 Created
+{
+  "id": 1,
+  "panelCode": "EP-1", 
+  "location": "Main Gate",
+  "parkingLotId": 1
+}
+```
+
+### Create Exit Panel
+```
+POST /exit-panels
+Content-Type: application/json
+
+Request:
+{
+  "parkingLotId": 1,
+  "panelCode": "XP-1",
+  "location": "Exit Gate"
+}
+
+Response: 201 Created
+{
+  "id": 1,
+  "panelCode": "XP-1", 
+  "location": "Exit Gate",
+  "parkingLotId": 1
 }
 ```
 
@@ -76,20 +243,13 @@ http://localhost:8081
 
 ## Status Codes
 
-- `200 OK` – Successful request
-- `400 Bad Request` – Invalid input
-- `404 Not Found` – Resource not found (e.g., invalid ticket)
-- `500 Internal Server Error` – Server side issue
-
-## Error Example
-
-```json
-{
-  "timestamp": "2025-08-03T17:05:00",
-  "status": 404,
-  "error": "Ticket Not Found",
-  "message": "No ticket found with ID TCKT-0009"
-}
-```
+- `200 OK` – Successful retrieval or update
+- `201 Created` – Resource successfully created
+- `204 No Content` – Deletion success
+- `400 Bad Request` – Invalid input data
+- `404 Not Found` – Resource not found
+- `500 Internal Server Error` – Unhandled server exception
 
 ---
+
+© 2025 Bharat Kumar Paliwal

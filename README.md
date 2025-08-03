@@ -1,67 +1,92 @@
+# 🅿️ Smart Parking Lot Management System
 
-# Parking Lot Management System
-
-A robust, modular, and extensible Spring Boot-based application to simulate real-world parking lot operations with support for multiple floors, dynamic spot allocation, and ticketing.
-
-## Features
-
-- Multiple floors and parking spot types (BIKE, CAR, TRUCK)
-- Entry and exit panels
-- Ticket issuance and payment processing
-- Parking spot availability management
-- RESTful APIs for system interaction
-
-## Technologies Used
-
-- Java 24
-- Spring Boot 3.x
-- Spring Web, Spring Data JPA
-- H2 Database (in-memory)
-- Maven
-
-## Project Structure
-
-```
-parking-lot/
-├── src/main/java/com/example/parkinglot/
-│   ├── config/                  # Configuration classes
-│   ├── controller/              # REST Controllers
-│   ├── dto/                     # DTOs
-│   ├── enums/                   # Enum types
-│   ├── exception/               # Custom exceptions
-│   ├── mapper/                  # DTO <-> Entity Mappers
-│   ├── model/                   # Entity models
-│   ├── repository/              # Spring Data Repositories
-│   ├── service/                 # Interfaces for services
-│   ├── service/impl/            # Implementations
-│   ├── util/                    # Utilities (e.g., ID Generator)
-│   └── ParkingLotApplication.java
-├── resources/
-│   └── application.properties
-├── test/
-│   └── (Unit tests)
-└── pom.xml
-```
-
-## How to Run
-
-```bash
-git clone https://github.com/your-username/parking-lot.git
-cd parking-lot
-./mvnw spring-boot:run
-```
-
-## Sample Endpoints
-
-- `POST /entry-panel/park` – Park a vehicle and get a ticket.
-- `POST /exit-panel/unpark` – Unpark a vehicle and pay fees.
-- `GET /parking-lot/availability` – View available spots.
-
-## Future Enhancements
-
-- Payment gateway integration
-- Real-time occupancy dashboard
-- Redis caching
-- JWT-based authentication
+A **Scalable Smart Parking Lot Management System** backend built with **Java 17** and **Spring Boot 3.x**. This application manages parking lots with multiple floors and spot types, handles vehicle entry/exit via panels, issues tickets, calculates fees, and provides RESTful APIs for integration.
 
 ---
+
+## 🚀 Features
+
+- **Multi-Floor Support:** Create multiple floors per parking lot.
+- **Spot Types:** Supports various spot types (BIKE, CAR, SUV, TRUCK).
+- **Entry/Exit Panels:** Simulate physical panels issuing and resolving tickets.
+- **Ticketing:** Generate tickets on entry, calculate fees on exit.
+- **Fee Calculation Strategies:** Pluggable pricing strategies (e.g., hourly rates).
+- **Real-Time Availability:** View available spots by floor and type.
+- **Extensible Architecture:** Easily add reservation, surge pricing, or payment integrations.
+
+---
+
+## 📦 Tech Stack
+
+- **Language:** Java 17
+- **Framework:** Spring Boot 3.x
+- **Persistence:** Spring Data JPA, H2 (development)
+- **Build:** Maven
+- **Mapping:** MapStruct (DTO mapping)
+- **Logging:** SLF4J / Logback
+
+---
+
+## 📁 Project Structure
+
+```
+parking-lot-backend/
+├── src/
+│   ├── main/
+│   │   ├── java/com/example/parkinglot/
+│   │   │   ├── config/              # Swagger, DB config
+│   │   │   ├── controller/          # REST controllers
+│   │   │   ├── dto/                 # Request/Response DTOs
+│   │   │   ├── entity/              # JPA entities
+│   │   │   ├── enums/               # Enum definitions
+│   │   │   ├── exception/           # Global handlers, custom exceptions
+│   │   │   ├── mapper/              # Entity <-> DTO mappers
+│   │   │   ├── repository/          # Spring Data repositories
+│   │   │   ├── service/             # Service interfaces
+│   │   │   └── service/impl/        # Service implementations
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       └── data.sql
+├── test/                            # Unit and integration tests
+├── pom.xml                          # Maven config
+└── README.md
+```
+
+---
+
+## ⚙️ Installation & Run
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/<your-username>/parking-lot-backend.git
+   cd parking-lot-backend
+   ```
+
+2. **Build the project:**
+   ```bash
+   mvn clean install
+   ```
+
+3. **Run the application:**
+   ```bash
+   mvn spring-boot:run
+   ```
+
+4. **Access H2 Console (DEV):**  
+   URL: `http://localhost:8080/h2-console`  
+   JDBC URL: `jdbc:h2:mem:parkingdb`
+
+---
+
+## 🔗 API Overview
+
+Please refer to the [API_DOCUMENTATION.md](API_DOCUMENTATION.md) for detailed endpoint specs, sample requests, and responses.
+
+---
+
+## 👨‍💻 Author
+
+**Bharat Kumar Paliwal**  
+[LinkedIn](https://www.linkedin.com/in/bharat-kumar-paliwal-b69533221)
+---
+
