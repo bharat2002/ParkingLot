@@ -1,5 +1,6 @@
 package com.bharatp.ParkingLotBackend.entity;
 
+import com.bharatp.ParkingLotBackend.enums.PaymentMode;
 import com.bharatp.ParkingLotBackend.enums.PaymentStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

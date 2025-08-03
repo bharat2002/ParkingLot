@@ -1,4 +1,7 @@
 package com.bharatp.ParkingLotBackend.enums;
 
-public class PaymentStatus {
+public enum PaymentStatus {
+    PENDING,
+    COMPLETED,
+    FAILED
 }

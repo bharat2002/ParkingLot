@@ -61,4 +61,40 @@ public class Ticket {
         this.fee = fee;
         this.active = false;
     }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setEntryTime(LocalDateTime entryTime) {
+        this.entryTime = entryTime;
+    }
+
+    public void setExitTime(LocalDateTime exitTime) {
+        this.exitTime = exitTime;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setFee(double fee) {
+        this.fee = fee;
+    }
+
+    public void setSpot(ParkingSpot spot) {
+        this.spot = spot;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
+    public void setEntryPanel(EntryPanel entryPanel) {
+        this.entryPanel = entryPanel;
+    }
+
+    public void setExitPanel(ExitPanel exitPanel) {
+        this.exitPanel = exitPanel;
+    }
 }

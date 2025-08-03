@@ -10,6 +10,7 @@ import com.bharatp.ParkingLotBackend.repository.*;
 import com.bharatp.ParkingLotBackend.service.allocate.PricingPolicy;
 import com.bharatp.ParkingLotBackend.service.allocate.SpotAllocationStrategy;
 import com.bharatp.ParkingLotBackend.service.interfaces.TicketService;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -46,29 +47,29 @@ public class TicketServiceImpl implements TicketService {
     }
 
     @Override
+    @Transactional
     public TicketResponseDTO issueTicket(TicketRequestDTO dto) {
-        Vehicle vehicle = vehicleRepo.findById(dto.getVehicleId())
-                .orElseThrow(() -> new NotFoundException("Vehicle not found: " + dto.getVehicleId()));
-        Floor floor = floorRepo.findById(dto.getFloorId())
-                .orElseThrow(() -> new NotFoundException("Floor not found: " + dto.getFloorId()));
-        // simple allocation: first available spot matching vehicle type
-        ParkingSpot spot = spotRepo.findByFloorIdAndIsAvailableTrue(floor.getId()).stream()
-                .filter(s -> s.getSpotType().name().contains(vehicle.getVehicleType().name()))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("No spot available on floor: " + floor.getId()));
+        Vehicle v = vehicleRepo.findById(dto.getVehicleId()).orElseThrow(
+        ()->{
+            return new NotFoundException("Vehicle Not Found With Id : "+ dto.getVehicleId());
+        });
+        Floor f   = floorRepo.findById(dto.getFloorId()).orElseThrow(()->{
+            return  new NotFoundException("Floor Not Found with Id :"+ dto.getFloorId() );
+        });
+        ParkingSpot spot = allocator.allocateSpot(f, v.getVehicleType())
+                .orElseThrow(() -> new NotFoundException("No spot available"));
+        EntryPanel panel = entryPanelRepo.findById(dto.getEntryPanelId()).orElseThrow(
+                ()->{
+                    return new NotFoundException("No Entry Panel Found with Id : "+dto.getEntryPanelId());
+                }
+        );
 
-        spot.setAvailable(false);
-        spotRepo.save(spot);
-
-        EntryPanel panel = entryPanelRepo.findById(dto.getEntryPanelId())
-                .orElseThrow(() -> new NotFoundException("EntryPanel not found: " + dto.getEntryPanelId()));
-
-        Ticket ticket = new Ticket(spot, vehicle, panel);
-        Ticket saved = ticketRepo.save(ticket);
-        return TicketMapper.toDTO(saved);
+        Ticket t = new Ticket(spot, v, panel);
+        return TicketMapper.toDTO(ticketRepo.save(t));
     }
 
     @Override
+    @Transactional
     public TicketResponseDTO exitTicket(TicketExitRequestDTO dto) {
         Ticket ticket = ticketRepo.findById(dto.getTicketId())
                 .orElseThrow(() -> new NotFoundException("Ticket not found: " + dto.getTicketId()));
@@ -78,17 +79,16 @@ public class TicketServiceImpl implements TicketService {
         ExitPanel exitPanel = exitPanelRepo.findById(dto.getExitPanelId())
                 .orElseThrow(() -> new NotFoundException("ExitPanel not found: " + dto.getExitPanelId()));
 
-        // calculate fee: e.g., $1 per minute
-        long minutes = Duration.between(ticket.getEntryTime(), LocalDateTime.now()).toMinutes();
-        double fee = minutes * 1.0;
 
-        ticket.markExit(exitPanel, fee);
-        ParkingSpot spot = ticket.getSpot();
-        spot.setAvailable(true);
-        spotRepo.save(spot);
+        ticket.markExit(exitPanel, 0);    // temporarily set fee=0, exitTime=now
 
-        Ticket updated = ticketRepo.save(ticket);
-        return TicketMapper.toDTO(updated);
+        double fee = pricingPolicy.calculateFee(ticket);
+        ticket.setFee(fee);
+        ticket.setActive(false);
+        ticket.getSpot().setAvailable(true);
+        spotRepo.save(ticket.getSpot());
+        return TicketMapper.toDTO(ticketRepo.save(ticket));
+
     }
 
     @Override

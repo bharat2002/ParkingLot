@@ -6,9 +6,11 @@ import com.bharatp.ParkingLotBackend.enums.VehicleType;
 import com.bharatp.ParkingLotBackend.repository.ParkingSpotRepository;
 import com.bharatp.ParkingLotBackend.service.allocate.SpotAllocationStrategy;
 import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 public class FirstFitSpotAllocator implements SpotAllocationStrategy {
     private final ParkingSpotRepository spotRepo;
 
