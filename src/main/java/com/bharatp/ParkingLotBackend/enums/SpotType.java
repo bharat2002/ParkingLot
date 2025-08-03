@@ -1,4 +1,8 @@
 package com.bharatp.ParkingLotBackend.enums;
 
-public class SpotType {
+public enum SpotType {
+    TWO_WHEELER,
+    CAR,
+    LARGE_VEHICLE,
+    ELECTRIC
 }
