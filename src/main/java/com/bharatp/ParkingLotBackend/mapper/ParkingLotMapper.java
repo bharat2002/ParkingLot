@@ -3,7 +3,7 @@ package com.bharatp.ParkingLotBackend.mapper;
 import com.bharatp.ParkingLotBackend.dto.request.ParkingLotRequestDTO;
 import com.bharatp.ParkingLotBackend.dto.response.ParkingLotResponseDTO;
 import com.bharatp.ParkingLotBackend.entity.ParkingLot;
-
+import com.bharatp.ParkingLotBackend.entity.Floor;
 import java.util.stream.Collectors;
 
 public class ParkingLotMapper {
