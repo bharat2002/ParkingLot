@@ -3,6 +3,7 @@ package com.bharatp.ParkingLotBackend.controller;
 import com.bharatp.ParkingLotBackend.dto.request.ParkingLotRequestDTO;
 import com.bharatp.ParkingLotBackend.dto.response.ParkingLotResponseDTO;
 import com.bharatp.ParkingLotBackend.service.interfaces.ParkingLotService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ public class ParkingLotController {
 
     private final ParkingLotService service;
 
+    @Autowired
     public ParkingLotController(ParkingLotService service) {
         this.service = service;
     }
