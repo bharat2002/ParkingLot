@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Parking Console</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-block">
+      <span class="brand-mark">P</span>
+      <div>
+        <p class="eyebrow">ParkingLot Backend</p>
+        <h1>Smart Parking Console</h1>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="refreshBtn" class="ghost-button" title="Refresh data" aria-label="Refresh data">Refresh</button>
+      <button id="seedBtn" class="primary-button">Create Demo Data</button>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="overview">
+      <article class="hero-panel">
+        <div>
+          <p class="eyebrow">Start here</p>
+          <h2>Run the full parking flow from one screen.</h2>
+          <p class="hero-copy">Create demo data, issue a ticket, watch a spot turn occupied, then close and pay the ticket.</p>
+        </div>
+        <button id="heroSeedBtn" class="primary-button wide">Create Demo Data</button>
+      </article>
+
+      <section class="metrics" aria-label="Parking metrics">
+        <div class="metric">
+          <span>Lots</span>
+          <strong id="lotCount">0</strong>
+        </div>
+        <div class="metric">
+          <span>Floors</span>
+          <strong id="floorCount">0</strong>
+        </div>
+        <div class="metric">
+          <span>Available</span>
+          <strong id="openSpotCount">0</strong>
+        </div>
+        <div class="metric">
+          <span>Parked</span>
+          <strong id="activeTicketCount">0</strong>
+        </div>
+      </section>
+    </section>
+
+    <section class="workspace">
+      <aside class="sidebar">
+        <div class="selector-box">
+          <label>
+            Parking Lot
+            <select id="lotSelect"></select>
+          </label>
+          <label>
+            Floor
+            <select id="floorSelect"></select>
+          </label>
+        </div>
+
+        <div class="lot-summary" id="lotSummary"></div>
+
+        <div class="setup-checks" id="setupChecks"></div>
+
+        <nav class="tabs" aria-label="Parking actions">
+          <button class="tab active" data-tab="operate"><span>1</span> Entry</button>
+          <button class="tab" data-tab="payments"><span>2</span> Exit & Pay</button>
+          <button class="tab" data-tab="setup"><span>3</span> Setup</button>
+        </nav>
+      </aside>
+
+      <section class="content">
+        <div class="panel active" id="operatePanel">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Entry desk</p>
+              <h2>Register a vehicle and issue its parking ticket.</h2>
+            </div>
+          </div>
+
+          <div class="entry-flow">
+            <form id="vehicleForm" class="tool-card">
+              <div class="card-head">
+                <span class="step-badge">1</span>
+                <h3>Vehicle Details</h3>
+              </div>
+              <label>
+                License Plate
+                <input name="licensePlate" required placeholder="KA01AB1234">
+              </label>
+              <label>
+                Owner Name
+                <input name="ownerName" required placeholder="Driver name">
+              </label>
+              <label>
+                Vehicle Type
+                <select name="vehicleType">
+                  <option>TWO_WHEELER</option>
+                  <option selected>CAR</option>
+                  <option>SUV</option>
+                  <option>TRUCK</option>
+                </select>
+              </label>
+              <button class="primary-button" type="submit">Register Vehicle</button>
+            </form>
+
+            <form id="ticketForm" class="tool-card highlight-card">
+              <div class="card-head">
+                <span class="step-badge">2</span>
+                <h3>Assign Spot</h3>
+              </div>
+              <label>
+                Vehicle
+                <select name="vehicleId" id="ticketVehicleSelect"></select>
+              </label>
+              <label>
+                Entry Gate
+                <select name="entryPanelId" id="entryPanelSelect"></select>
+              </label>
+              <button class="primary-button" type="submit">Issue Ticket</button>
+            </form>
+          </div>
+
+          <div class="section-title compact">
+            <div>
+              <p class="eyebrow">Live floor</p>
+              <h2>Spot map</h2>
+            </div>
+            <span id="floorCaption" class="section-note"></span>
+          </div>
+          <div class="map-legend">
+            <span><b class="dot open-dot"></b> Available</span>
+            <span><b class="dot taken-dot"></b> Occupied</span>
+          </div>
+          <div id="spotGrid" class="spot-grid"></div>
+
+          <div class="section-title compact">
+            <div>
+              <p class="eyebrow">Currently parked</p>
+              <h2>Active tickets</h2>
+            </div>
+            <span id="ticketCaption" class="section-note"></span>
+          </div>
+          <div id="activeTickets" class="ticket-list"></div>
+        </div>
+
+        <div class="panel" id="paymentsPanel">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Exit desk</p>
+              <h2>Close a ticket, calculate fee, and record payment.</h2>
+            </div>
+          </div>
+
+          <div class="entry-flow">
+            <form id="exitTicketForm" class="tool-card highlight-card">
+              <div class="card-head">
+                <span class="step-badge">1</span>
+                <h3>Calculate Fee</h3>
+              </div>
+              <label>
+                Active Ticket
+                <select name="ticketId" id="exitTicketSelect"></select>
+              </label>
+              <label>
+                Exit Gate
+                <select name="exitPanelId" id="exitPanelSelect"></select>
+              </label>
+              <button class="primary-button" type="submit">Close Ticket</button>
+            </form>
+
+            <form id="paymentForm" class="tool-card">
+              <div class="card-head">
+                <span class="step-badge">2</span>
+                <h3>Payment</h3>
+              </div>
+              <label>
+                Ticket ID
+                <input name="ticketId" id="paymentTicketId" type="number" min="1" required placeholder="Ticket number">
+              </label>
+              <label>
+                Payment Mode
+                <select name="mode">
+                  <option>CASH</option>
+                  <option>CARD</option>
+                  <option selected>UPI</option>
+                </select>
+              </label>
+              <button class="primary-button" type="submit">Mark Paid</button>
+            </form>
+          </div>
+          <div id="receipt" class="receipt"></div>
+        </div>
+
+        <div class="panel" id="setupPanel">
+          <div class="section-title">
+            <div>
+              <p class="eyebrow">Configuration</p>
+              <h2>Add the lot, floor, spots, and gates used by the flow.</h2>
+            </div>
+          </div>
+
+          <div class="setup-grid">
+            <form id="lotForm" class="tool-card">
+              <div class="card-head">
+                <span class="step-badge">1</span>
+                <h3>Parking Lot</h3>
+              </div>
+              <label>Name <input name="name" required placeholder="Orion Mall Parking"></label>
+              <label>Address <input name="address" required placeholder="Bangalore"></label>
+              <button class="primary-button" type="submit">Create Lot</button>
+            </form>
+
+            <form id="floorForm" class="tool-card">
+              <div class="card-head">
+                <span class="step-badge">2</span>
+                <h3>Floor</h3>
+              </div>
+              <label>Floor Number <input name="floorNumber" type="number" min="0" required value="1"></label>
+              <button class="primary-button" type="submit">Add Floor</button>
+            </form>
+
+            <form id="spotForm" class="tool-card">
+              <div class="card-head">
+                <span class="step-badge">3</span>
+                <h3>Spot</h3>
+              </div>
+              <label>Spot Number <input name="spotNumber" required placeholder="F1-C01"></label>
+              <label>
+                Spot Type
+                <select name="spotType">
+                  <option>TWO_WHEELER</option>
+                  <option selected>CAR</option>
+                  <option>LARGE</option>
+                  <option>ELECTRIC</option>
+                </select>
+              </label>
+              <button class="primary-button" type="submit">Add Spot</button>
+            </form>
+
+            <form id="entryPanelForm" class="tool-card">
+              <div class="card-head">
+                <span class="step-badge">4</span>
+                <h3>Entry Gate</h3>
+              </div>
+              <label>Panel Code <input name="panelCode" required placeholder="EP-1"></label>
+              <label>Location <input name="location" required placeholder="Main Gate"></label>
+              <button class="primary-button" type="submit">Create Entry Gate</button>
+            </form>
+
+            <form id="exitPanelForm" class="tool-card">
+              <div class="card-head">
+                <span class="step-badge">5</span>
+                <h3>Exit Gate</h3>
+              </div>
+              <label>Panel Code <input name="panelCode" required placeholder="XP-1"></label>
+              <label>Location <input name="location" required placeholder="Exit Gate"></label>
+              <button class="primary-button" type="submit">Create Exit Gate</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>
