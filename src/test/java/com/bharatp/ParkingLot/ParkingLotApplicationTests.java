@@ -1,4 +1,4 @@
-package com.bharatp.ParkingLot;
+package com.bharatp.ParkingLotBackend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
